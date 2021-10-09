@@ -1,6 +1,12 @@
 import express from "express";
 import cors from "cors";
-import dayjs from "dayjs";
+import fs from "fs";
+
+import {
+    addParticipant,
+    getParticipants,
+    isNameTaken,
+} from "./scripts/participants.js";
 
 const app = express();
 app.use(express.json());
@@ -13,28 +19,13 @@ app.post("/participants", (req, res) => {
         });
     }
 
-    const participantData = { ...participant, lastStatus: Date.now() };
-    participants.push(participantData);
-    messages.push({
-        from: participantData.name,
-        to: "Todos",
-        text: "entra na sala...",
-        type: "status",
-        time: dayjs(participantData.lastStatus).format("HH:MM:SS"),
-    });
-    res.send(messages);
+    addParticipant(participant);
+    res.send("User joined the chat.");
 });
 
 app.get("/participants", (req, res) => {
+    const participants = getParticipants();
     res.send(participants);
 });
 
 app.listen(4000);
-
-function isNameTaken(name) {
-    return participants.some((participant) => participant.name === name);
-}
-
-const participants = [];
-
-const messages = [];
