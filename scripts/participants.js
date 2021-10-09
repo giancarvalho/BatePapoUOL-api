@@ -18,7 +18,7 @@ function addParticipant(participant) {
         to: "Todos",
         text: "entra na sala...",
         type: "status",
-        time: dayjs(participantData.lastStatus).format("HH:MM:SS"),
+        time: dayjs(participantData.lastStatus).format("HH:mm:ss"),
     });
     saveData();
 }
