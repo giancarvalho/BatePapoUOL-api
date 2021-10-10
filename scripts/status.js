@@ -1,29 +1,40 @@
 import dayjs from "dayjs";
 import { addMessage } from "./messages.js";
-import { getParticipants, saveData } from "./participants.js";
+import { saveData, getParticipants, updateList } from "./participants.js";
 
-let participants = getParticipants();
+let participantsList = getParticipants();
 
 export default function confirmStatus(user) {
-    return participants.some((participant) => participant.name === user);
+    let confirmation = false;
+    participantsList.forEach((participant) => {
+        if (participant.name === user) {
+            participant.lastStatus = Date.now();
+            confirmation = true;
+        }
+    });
+
+    return confirmation;
 }
 
 function updateParticipants() {
     const offlineParticipants = [];
-
-    participants = participants.filter((participant) => {
-        const isOffline = (Date.now() - participant.lastStatus) / 1000 > 10;
+    const now = Date.now();
+    const newParticipantsList = participantsList.filter((participant) => {
+        const isOffline = (now - participant.lastStatus) / 1000 > 10;
 
         if (isOffline) {
             offlineParticipants.push(participant);
+        } else {
+            participant.lastStatus = now;
         }
 
         return !isOffline;
     });
 
+    participantsList = updateList(newParticipantsList);
     createOfflineMessage(offlineParticipants);
 
-    saveData(participants);
+    saveData(participantsList);
 }
 
 function createOfflineMessage(offlineParticipants) {

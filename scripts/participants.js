@@ -4,7 +4,7 @@ import path from "path";
 import { addMessage } from "./messages.js";
 
 const participantsPath = path.resolve("../backend/database/participants.json");
-const participantsList = JSON.parse(fs.readFileSync(participantsPath));
+let participantsList = JSON.parse(fs.readFileSync(participantsPath));
 
 function saveData(participants) {
     fs.writeFileSync(participantsPath, JSON.stringify(participants));
@@ -33,4 +33,9 @@ function getParticipants() {
     return participantsList;
 }
 
-export { addParticipant, isNameTaken, getParticipants, saveData };
+function updateList(newParticipantList) {
+    participantsList = newParticipantList;
+    return participantsList;
+}
+
+export { addParticipant, isNameTaken, getParticipants, saveData, updateList };

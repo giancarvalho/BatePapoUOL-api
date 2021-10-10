@@ -6,12 +6,13 @@ const messagesPath = path.resolve("../backend/database/messages.json");
 const messagesList = JSON.parse(fs.readFileSync(messagesPath));
 
 function saveData() {
-    fs.writeFileSync(messagesPath, JSON.stringify(messagesList));
+    const lastMessages = messagesList.slice(-200);
+    fs.writeFileSync(messagesPath, JSON.stringify(lastMessages));
 }
 
 function getMessages(user, limit) {
     const messages = filterMessages(user);
-    return messages.slice(0, limit);
+    return messages.slice(-limit);
 }
 
 function addMessage({ user, messageData }) {
@@ -41,7 +42,7 @@ function filterMessages(user) {
 
 function validateMessage(messageData) {
     const validation = { isInvalid: false, errorMessage: "" };
-
+    console.log(messageData);
     if (messageData.to.length === 0 || messageData.text.length === 0) {
         validation.isInvalid = true;
         validation.errorMessage += " Text and recipient cannot be empty.";
@@ -58,7 +59,8 @@ function validateMessage(messageData) {
     if (
         !getParticipants().some(
             (participant) => participant.name === messageData.to
-        )
+        ) &&
+        messageData.to !== "Todos"
     ) {
         validation.isInvalid = true;
         validation.errorMessage += `There isn't a user called ${messageData.to} in this chat`;

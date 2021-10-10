@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-
 import {
     addParticipant,
     getParticipants,
@@ -35,7 +34,7 @@ app.post("/participants", (req, res) => {
     }
 
     addParticipant(participant);
-    res.send("User joined the chat.");
+    res.send("ok");
 });
 
 app.get("/participants", (req, res) => {
