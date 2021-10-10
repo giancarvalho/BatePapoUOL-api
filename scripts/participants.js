@@ -38,4 +38,27 @@ function updateList(newParticipantList) {
     return participantsList;
 }
 
-export { addParticipant, isNameTaken, getParticipants, saveData, updateList };
+function validateParticipant(participant) {
+    const validation = { isInvalid: false, errorMessage: "" };
+
+    if (participant.name.length === 0) {
+        validation.isInvalid = true;
+        validation.errorMessage = "Name cannot be empty.";
+    }
+
+    if (isNameTaken(participant.name)) {
+        validation.isInvalid = true;
+        validation.errorMessage +=
+            " This name is already being used by another user.";
+    }
+
+    return validation;
+}
+
+export {
+    addParticipant,
+    getParticipants,
+    saveData,
+    updateList,
+    validateParticipant,
+};

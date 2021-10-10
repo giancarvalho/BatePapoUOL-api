@@ -3,7 +3,7 @@ import cors from "cors";
 import {
     addParticipant,
     getParticipants,
-    isNameTaken,
+    validateParticipant,
 } from "./scripts/participants.js";
 import {
     addMessage,
@@ -18,23 +18,17 @@ app.use(cors());
 
 app.post("/participants", (req, res) => {
     const participant = req.body;
+    const validation = validateParticipant(participant);
 
-    if (participant.name.length === 0) {
+    if (validation.isInvalid) {
         res.status(400).json({
-            error: "Name cannot be empty",
-        });
-        return;
-    }
-
-    if (isNameTaken(participant.name)) {
-        res.status(400).json({
-            error: "This name is already being used by another user",
+            error: validation.errorMessage,
         });
         return;
     }
 
     addParticipant(participant);
-    res.send("ok");
+    res.send("User joined the chat.");
 });
 
 app.get("/participants", (req, res) => {
@@ -61,7 +55,6 @@ app.post("/messages", (req, res) => {
 app.get("/messages", (req, res) => {
     const limit = req.query.limit;
     const username = req.headers.user;
-
     const messages = getMessages(username, limit);
 
     res.send(messages);
@@ -69,7 +62,6 @@ app.get("/messages", (req, res) => {
 
 app.post("/status", (req, res) => {
     const user = req.headers.user;
-
     const confirmation = confirmStatus(user);
 
     if (!confirmation) {
@@ -79,7 +71,7 @@ app.post("/status", (req, res) => {
         return;
     }
 
-    res.send("Ok.");
+    res.send("Status confirmed.");
 });
 
 app.listen(4000);

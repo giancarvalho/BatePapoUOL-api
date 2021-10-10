@@ -42,7 +42,7 @@ function filterMessages(user) {
 
 function validateMessage(messageData) {
     const validation = { isInvalid: false, errorMessage: "" };
-    console.log(messageData);
+
     if (messageData.to.length === 0 || messageData.text.length === 0) {
         validation.isInvalid = true;
         validation.errorMessage += " Text and recipient cannot be empty.";
