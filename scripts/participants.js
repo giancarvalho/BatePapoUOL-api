@@ -14,11 +14,13 @@ function addParticipant(participant) {
     const participantData = { ...participant, lastStatus: Date.now() };
     participantsList.push(participantData);
     addMessage({
-        from: participantData.name,
-        to: "Todos",
-        text: "entra na sala...",
-        type: "status",
-        time: dayjs(participantData.lastStatus).format("HH:mm:ss"),
+        messageData: {
+            from: participantData.name,
+            to: "Todos",
+            text: "entra na sala...",
+            type: "message",
+            time: dayjs(participantData.lastStatus).format("HH:mm:ss"),
+        },
     });
     saveData();
 }

@@ -6,7 +6,11 @@ import {
     getParticipants,
     isNameTaken,
 } from "./scripts/participants.js";
-import { addMessage, getMessages } from "./scripts/messages.js";
+import {
+    addMessage,
+    getMessages,
+    validateMessage,
+} from "./scripts/messages.js";
 
 const app = express();
 
@@ -42,24 +46,16 @@ app.get("/participants", (req, res) => {
 app.post("/messages", (req, res) => {
     const messageData = req.body;
     const username = req.headers.user;
+    const messageValidation = validateMessage(messageData);
 
-    if (messageData.to.length === 0 || messageData.text.length === 0) {
+    if (messageValidation.isInvalid) {
         res.status(400).json({
-            error: "Name and text cannot be empty",
+            error: messageValidation.errorMessage,
         });
         return;
     }
 
-    if (
-        messageData.type !== "message" &&
-        messageData.type !== "private_message"
-    ) {
-        res.status(400).json({
-            error: "Message type doens't exist",
-        });
-        return;
-    }
-    addMessage(username, messageData);
+    addMessage({ user: username, messageData });
     res.send("Message sent.");
 });
 
@@ -71,5 +67,12 @@ app.get("/messages", (req, res) => {
 
     res.send(messages);
 });
+
+// app.post("/status", (req, res) => {
+//     const participant = req.body;
+
+//     confirmStatus(participant);
+//     res.send("Ok.");
+// });
 
 app.listen(4000);

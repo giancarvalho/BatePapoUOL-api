@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import dayjs from "dayjs";
-
+import { getParticipants } from "./participants.js";
 const messagesPath = path.resolve("../backend/database/messages.json");
 const messagesList = JSON.parse(fs.readFileSync(messagesPath));
 
@@ -14,7 +14,7 @@ function getMessages(user, limit) {
     return messages.slice(0, limit);
 }
 
-function addMessage(user, messageData) {
+function addMessage({ user, messageData }) {
     if (user) {
         messagesList.push({
             ...messageData,
@@ -29,19 +29,42 @@ function addMessage(user, messageData) {
 }
 
 function filterMessages(user) {
-    const messages = messagesList.filter((message) => {
-        if (
+    const messages = messagesList.filter(
+        (message) =>
+            message.type === "message" ||
             message.to === user ||
-            message.from === user ||
-            message.type === "message"
-        ) {
-            return true;
-        } else {
-            return false;
-        }
-    });
+            message.from === user
+    );
 
     return messages;
 }
 
-export { addMessage, getMessages };
+function validateMessage(messageData) {
+    const validation = { isInvalid: false, errorMessage: "" };
+
+    if (messageData.to.length === 0 || messageData.text.length === 0) {
+        validation.isInvalid = true;
+        validation.errorMessage += " Text and recipient cannot be empty.";
+    }
+
+    if (
+        messageData.type !== "message" &&
+        messageData.type !== "private_message"
+    ) {
+        validation.isInvalid = true;
+        validation.errorMessage += " Text and recipient cannot be empty.";
+    }
+
+    if (
+        !getParticipants().some(
+            (participant) => participant.name === messageData.to
+        )
+    ) {
+        validation.isInvalid = true;
+        validation.errorMessage += `There isn't a user called ${messageData.to} in this chat`;
+    }
+
+    return validation;
+}
+
+export { addMessage, getMessages, validateMessage };
