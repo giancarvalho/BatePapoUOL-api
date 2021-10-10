@@ -11,7 +11,7 @@ import {
     getMessages,
     validateMessage,
 } from "./scripts/messages.js";
-
+import confirmStatus from "./scripts/status.js";
 const app = express();
 
 app.use(express.json());
@@ -68,11 +68,19 @@ app.get("/messages", (req, res) => {
     res.send(messages);
 });
 
-// app.post("/status", (req, res) => {
-//     const participant = req.body;
+app.post("/status", (req, res) => {
+    const user = req.headers.user;
 
-//     confirmStatus(participant);
-//     res.send("Ok.");
-// });
+    const confirmation = confirmStatus(user);
+
+    if (!confirmation) {
+        res.status(400).json({
+            error: "Invalid request. User doesn't exist or is no longer in the chat.",
+        });
+        return;
+    }
+
+    res.send("Ok.");
+});
 
 app.listen(4000);

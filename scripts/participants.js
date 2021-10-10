@@ -6,8 +6,8 @@ import { addMessage } from "./messages.js";
 const participantsPath = path.resolve("../backend/database/participants.json");
 const participantsList = JSON.parse(fs.readFileSync(participantsPath));
 
-function saveData() {
-    fs.writeFileSync(participantsPath, JSON.stringify(participantsList));
+function saveData(participants) {
+    fs.writeFileSync(participantsPath, JSON.stringify(participants));
 }
 
 function addParticipant(participant) {
@@ -22,7 +22,7 @@ function addParticipant(participant) {
             time: dayjs(participantData.lastStatus).format("HH:mm:ss"),
         },
     });
-    saveData();
+    saveData(participantsList);
 }
 
 function isNameTaken(name) {
@@ -33,4 +33,4 @@ function getParticipants() {
     return participantsList;
 }
 
-export { addParticipant, isNameTaken, getParticipants };
+export { addParticipant, isNameTaken, getParticipants, saveData };
